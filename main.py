@@ -36,7 +36,22 @@ td.crear_columna_arrival_date(df)
 
 
 df['arrival_date_week_number'] = df['arrival_date_week_number'].fillna(df['arrival_date'].dt.isocalendar().week)
-
+# Convierte los valores de la columna a positivos
+df['adr'] = df['adr'].abs()
 
 
 # %%
+columnas = ["is_repeated_guest", "is_canceled"]
+df = td.convertir_a_boleano(df, columnas)
+
+columnas = ["adults", "children", "babies"]
+df = td.eliminar_segundo_digito(df, columnas)
+
+# Aplicar la función al DataFrame
+df['market_segment'] = df.apply(td.imputar_market_segment, axis=1)
+
+# Aplicar la función al DataFrame
+df['distribution_channel'] = df.apply(td.imputar_distribution_channel, axis=1)
+
+columnas = ["children", "previous_cancellations"]
+df = td.imputar_nulos_iterative(df, columnas )

@@ -180,3 +180,88 @@ def calcular_fecha_reserva(df):
     # Calcular 'reservation_date' restando 'lead_time' de 'arrival_date'
     df['reservation_date'] = df['arrival_date'] - pd.to_timedelta(df['lead_time'], unit='d')
 # %%
+
+def convertir_a_boleano(df, columnas):
+    """
+    Convierte las columnas especificadas de un DataFrame a tipo booleano.
+    Parámetros:
+    df (pandas.DataFrame): El DataFrame en el que se encuentran las columnas.
+    columnas (list): Lista de nombres de columnas a convertir.
+    Retorna:
+    pandas.DataFrame: El DataFrame con las columnas convertidas a booleano.
+    """
+    print(f'El tipo de dato antes del cambio \n {df["is_repeated_guest"].dtype} \n {df["is_canceled"].dtype}')
+    for columna in columnas:
+        df[columna] = df[columna].astype(bool)
+    print(f'El tipo de dato después del cambio \n {df["is_repeated_guest"].dtype} \n {df["is_canceled"].dtype}')
+    return df
+
+def eliminar_segundo_digito (df, columnas):
+    for columna in columnas:
+        print(f"{columna.upper()} --> Valores únicos antes de eliminar: {df[columna].nunique()}")
+        df[columna] = df[columna].apply(lambda num: num if num < 10 else num // 10 )
+        print(f"{columna.upper()} --> Valores únicos después de eliminar: {df[columna].nunique()}")
+    return df
+
+# Función para imputar valores en la columna 'market_segment'
+def imputar_market_segment(row):    
+    if pd.isnull(row['market_segment']):
+        # Reglas para imputar los valores nulos
+        if row['distribution_channel'] == 'Corporate':
+            return 'Corporate'
+        elif row['distribution_channel'] == 'Direct':
+            return 'Direct'
+        elif row['distribution_channel'] == 'Corporate':
+            return 'Corporate'
+        elif row['distribution_channel'] == 'Undifined':
+            return 'Undifined'        
+    else:
+        return row['market_segment']
+
+# Función para imputar valores en la columna 'market_segment'
+def imputar_distribution_channel(row):
+    if pd.isnull(row['distribution_channel']):
+        # Reglas para imputar los valores nulos
+        if row['market_segment'] == 'Aviation' or 'Corporate':
+            return 'Corporate'
+        elif row['market_segment'] == 'Complementary':
+            return 'Direct'        
+        elif row['market_segment'] == 'Direct':
+            return 'Direct'
+        elif row['market_segment'] == 'Groups' or 'Offline TA/TO' or 'Online TA':
+            return 'TA/TO' 
+        elif row['market_segment'] == 'Undifined':
+            return 'Undifined'    
+    else:
+        return row['distribution_channel'] 
+
+
+def imputar_nulos_iterative (df, columns):
+    """
+    Dada una lista de columnas y un DataFrame, esta función completa los nulos de las columnas con el método IterativeImputer.
+    Además, redondea los valores imputados a enteros y asegura que no haya valores negativos.
+        Parámetros:
+    df (pd.DataFrame): El DataFrame a procesar.
+    columns (list): Lista de nombres de columnas a imputar.
+        Retorna:
+    pd.DataFrame: El DataFrame con los valores nulos imputados.
+    """
+    # Número de Nan y distribución antes de aplicar el método
+    for column in columns:
+        print(f"Porcentaje de NaN en '{column}': {df[column].isna().sum() / df.shape[0]:.2f}%")
+        print(df[column].value_counts() / df.shape[0] * 100)
+    # instanciamos las clases
+    imputer_iterative = IterativeImputer(max_iter = 20, random_state = 42)  
+    # ajustamos y tranformamos los datos
+    imputer_iterative_imputado = imputer_iterative.fit_transform(df[columns])
+    # Redondeamos los valores imputados a enteros
+    imputer_iterative_imputado = np.round(imputer_iterative_imputado).astype(int)
+    # Nos aseguramos de que no haya valores negativos
+    imputer_iterative_imputado[imputer_iterative_imputado < 0] = 0
+    # Asignamos los valores imputados de vuelta al DataFrame
+    df[columns] = imputer_iterative_imputado
+    # Número de Nan y distribución después de aplicar el método
+    for column in columns:
+        print(f"Porcentaje de NaN en '{column}': {df[column].isna().sum() / df.shape[0]:.2f}%")
+        print(df[column].value_counts() / df.shape[0] * 100)
+    return df
