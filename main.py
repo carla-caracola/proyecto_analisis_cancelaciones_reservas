@@ -2,6 +2,7 @@
 # Imports
 from src import transformacion_de_datos as td
 import pandas as pd
+import datetime
 
 # %%
 # Importar datos
@@ -55,3 +56,16 @@ df['distribution_channel'] = df.apply(td.imputar_distribution_channel, axis=1)
 
 columnas = ["children", "previous_cancellations"]
 df = td.imputar_nulos_iterative(df, columnas )
+
+# Imputar nulos por 'Unknown'
+lista_columnas = ['country', 'company', 'agent']
+td.imputar_por_unknown (df, lista_columnas)
+
+# Imputar nulos por la moda
+lista_columnas = ["is_repeated_guest","customer_type"]
+td.imputar_por_moda (df, lista_columnas)
+
+fecha_hoy = datetime.now()
+df.to_csv(f'data/finanzas_hotel_booking_transformado{fecha_hoy}.csv')
+
+

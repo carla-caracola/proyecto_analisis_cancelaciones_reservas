@@ -265,3 +265,52 @@ def imputar_nulos_iterative (df, columns):
         print(f"Porcentaje de NaN en '{column}': {df[column].isna().sum() / df.shape[0]:.2f}%")
         print(df[column].value_counts() / df.shape[0] * 100)
     return df
+
+
+# Definir la función para imputar nulos por 'Unknown'
+
+def imputar_por_unknown(dataframe, lista_columnas):
+        """
+        Esta función itera sobre una lista de columnas dentro de un dataframe y reemplaza los nulos por 'Unknown'.
+
+        Args:
+            dataframe (pandas dataframe): Es el dataframe que contiene los datos.
+            lista_columnas (lista): Lista de columnas existentes en el dataframe sobre las cuales se quiere imputar los nulos.
+
+        Returns:
+            dataframe: Dataframe actualizado.
+        """
+        for columna in lista_columnas:
+            # Verificar si la columna existe en el dataframe
+            if columna in dataframe:
+                # Si existe, reemplazar nulos por 'Unknown'
+                dataframe[columna] = dataframe[columna].fillna("Unknown")
+            else:
+                # Si no existe, imprimir un mensaje de error
+                print(f"❌ La columna '{columna}' no existe en el DataFrame.")
+
+        return dataframe
+
+
+# Definir la función para imputar nulos por la moda
+
+def imputar_por_moda (dataframe, lista_columnas):
+        """
+        Esta función itera sobre una lista de columnas dentro de un dataframe y reemplaza los nulos por la moda.
+
+        Args:
+            dataframe (pandas dataframe): Es el dataframe que contiene los datos.
+            lista_columnas (lista): Lista de columnas existentes en el dataframe sobre las cuales se quiere imputar los nulos.
+
+        Returns:
+            dataframe: Dataframe actualizado.
+        """
+        for columna in lista_columnas:
+            # Verificar si la columna existe en el dataframe
+            if columna in dataframe.columns:
+                # Si existe, calcular la moda y reemplazar los nulos con la moda
+                moda = dataframe[columna].mode()[0]
+                dataframe[columna] = dataframe[columna].fillna(moda)
+            else:
+                print(f"❌ La columna '{columna}' no existe en el DataFrame.")
+        return dataframe
