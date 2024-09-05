@@ -58,14 +58,19 @@ columnas = ["children", "previous_cancellations"]
 df = td.imputar_nulos_iterative(df, columnas )
 
 # Imputar nulos por 'Unknown'
-lista_columnas = ['country', 'company', 'agent']
+lista_columnas = ['country', 'company', 'agent', "reserved_room_type"]
 td.imputar_por_unknown (df, lista_columnas)
 
 # Imputar nulos por la moda
 lista_columnas = ["is_repeated_guest","customer_type"]
 td.imputar_por_moda (df, lista_columnas)
 
-fecha_hoy = datetime.now()
-df.to_csv(f'data/finanzas_hotel_booking_transformado{fecha_hoy}.csv')
+# %%
+# fecha_hoy = datetime.now()
+# df.to_csv(f'data/finanzas_hotel_booking_transformado{fecha_hoy}.csv')
+
+df.to_csv(f'data/finanzas_hotel_booking_transformado.csv')
 
 
+
+# %%
