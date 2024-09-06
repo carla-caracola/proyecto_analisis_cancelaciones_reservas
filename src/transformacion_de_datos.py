@@ -124,7 +124,7 @@ def rellenar_fecha_llegada(df):
 
     # borramos las columnas creadas para hacer los cálculos
     columnas_a_borrar = ['estimated_arrival_date', 'estimated_arrival_year', 'estimated_arrival_month', 'estimated_arrival_day']
-    df = df.drop(columns=columnas_a_borrar)
+    df.drop(columns=columnas_a_borrar, inplace=True)
 
 
 def imputar_knn_fechas(df, n_neighbors=5):
@@ -181,6 +181,26 @@ def calcular_fecha_reserva(df):
     df['reservation_date'] = df['arrival_date'] - pd.to_timedelta(df['lead_time'], unit='d')
 # %%
 
+def rellenar_fecha_estado_reserva(df):
+    # Si el reservation status es "Check-out", entonces la "reservation_status_date" es igual a "arrival_date" + "total_stays"
+    # Crear filtro para cuando el estado de la reserva es "Checkout"
+    filtro_checkout = df['reservation_status'] == 'Checkout'
+    
+    #Creamos una columna 'estimated_reservation_status_date' con valores NaT (Not a Time)
+    df['estimated_reservation_status_date'] = pd.NaT
+
+    # Completamos 'estimated_reservation_status_date' a partir de la suma de "arrival_date" + "total_stays"
+    df.loc[filtro_checkout, 'estimated_reservation_status_date'] = df.loc[filtro_checkout, 'arrival_date'] + pd.to_timedelta(df.loc[filtro_checkout, 'total_stays'], unit='D')
+
+    # Para los que no son "Checkout", asumir que la reservation status date es igual que el arrival
+    df.loc[~filtro_checkout, 'estimated_reservation_status_date'] = df.loc[~filtro_checkout, 'arrival_date']
+
+    # Rellenar los valores nulos en reservation_status_date con los valores estimados
+    df['reservation_status_date'] = df['reservation_status_date'].fillna(df['estimated_reservation_status_date'])
+
+    df.drop(columns=['estimated_reservation_status_date'], inplace=True)
+
+
 def convertir_a_boleano(df, columnas):
     """
     Convierte las columnas especificadas de un DataFrame a tipo booleano.
@@ -194,14 +214,12 @@ def convertir_a_boleano(df, columnas):
     for columna in columnas:
         df[columna] = df[columna].astype(bool)
     print(f'El tipo de dato después del cambio \n {df["is_repeated_guest"].dtype} \n {df["is_canceled"].dtype}')
-    return df
 
 def eliminar_segundo_digito (df, columnas):
     for columna in columnas:
         print(f"{columna.upper()} --> Valores únicos antes de eliminar: {df[columna].nunique()}")
         df[columna] = df[columna].apply(lambda num: num if num < 10 else num // 10 )
         print(f"{columna.upper()} --> Valores únicos después de eliminar: {df[columna].nunique()}")
-    return df
 
 # Función para imputar valores en la columna 'market_segment'
 def imputar_market_segment(row):    
@@ -217,23 +235,6 @@ def imputar_market_segment(row):
             return 'Undifined'        
     else:
         return row['market_segment']
-
-# Función para imputar valores en la columna 'market_segment'
-def imputar_distribution_channel(row):
-    if pd.isnull(row['distribution_channel']):
-        # Reglas para imputar los valores nulos
-        if row['market_segment'] == 'Aviation' or 'Corporate':
-            return 'Corporate'
-        elif row['market_segment'] == 'Complementary':
-            return 'Direct'        
-        elif row['market_segment'] == 'Direct':
-            return 'Direct'
-        elif row['market_segment'] == 'Groups' or 'Offline TA/TO' or 'Online TA':
-            return 'TA/TO' 
-        elif row['market_segment'] == 'Undifined':
-            return 'Undifined'    
-    else:
-        return row['distribution_channel'] 
 
 
 def imputar_nulos_iterative (df, columns):
@@ -264,7 +265,6 @@ def imputar_nulos_iterative (df, columns):
     for column in columns:
         print(f"Porcentaje de NaN en '{column}': {df[column].isna().sum() / df.shape[0]:.2f}%")
         print(df[column].value_counts() / df.shape[0] * 100)
-    return df
 
 
 # Definir la función para imputar nulos por 'Unknown'
