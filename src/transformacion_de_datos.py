@@ -9,6 +9,7 @@ import numpy as np
 import re
 import calendar
 
+
 from sklearn.impute import SimpleImputer
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
@@ -231,8 +232,8 @@ def imputar_market_segment(row):
             return 'Direct'
         elif row['distribution_channel'] == 'Corporate':
             return 'Corporate'
-        elif row['distribution_channel'] == 'Undifined':
-            return 'Undifined'        
+        elif row['distribution_channel'] == 'Undefined':
+            return 'Undefined'        
     else:
         return row['market_segment']
 
