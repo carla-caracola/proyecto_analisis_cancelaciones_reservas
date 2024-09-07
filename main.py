@@ -24,20 +24,22 @@ df['reservation_status_date'] = df['reservation_status_date'].apply(td.reemplaza
 df['reservation_status_date'] = df['reservation_status_date'].apply(td.quitar_horas)
 
 #%%
+
+# cambiamos texto por números
 td.cambiar_formato_mes(df)
-
+# Rellenamos fecha de llegada
 td.rellenar_fecha_llegada(df)
-
+# imputamos KNN
 td.imputar_knn_fechas(df)
-
+#creamos columna arrival_date
 td.crear_columna_arrival_date(df)
-
+# Creamos columa fecha de reserva
 td.calcular_fecha_reserva(df)
 
 df['arrival_date_week_number'] = df['arrival_date_week_number'].fillna(df['arrival_date'].dt.isocalendar().week)
 # Convierte los valores de la columna a positivos
 df['adr'] = df['adr'].abs()
-
+# Rellenamos fecha de estado de reserva
 td.rellenar_fecha_estado_reserva(df)
 
 # %%
