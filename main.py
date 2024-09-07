@@ -47,11 +47,13 @@ td.convertir_a_boleano(df, columnas)
 columnas = ["adults", "children", "babies"]
 td.eliminar_segundo_digito(df, columnas)
 
-# Imputar nulos de la columna "distribution_channel" a la categoría "Undefined"
-df["distribution_channel"].fillna("Undefined")
+# %%
+# Imputar nulos de la columna "distribution_channel", "market_segment" a la categoría "Undefined"
+columnas = ["distribution_channel", "market_segment"]
+td.imputar_por_undefined(df, columnas)
 
-# Aplicar la función al DataFrame
-df['market_segment'] = df.apply(td.imputar_market_segment, axis=1)
+# # Aplicar la función al DataFrame
+# df['market_segment'] = df.apply(td.imputar_market_segment, axis=1)
 
 columnas = ["children", "previous_cancellations"]
 td.imputar_nulos_iterative(df, columnas )
@@ -66,9 +68,10 @@ td.imputar_por_moda (df, lista_columnas)
 
 
 # %%
-
 df.to_csv(f'data/finanzas_hotel_booking_transformado.csv')
 
 
 
+# %%
+df.columns
 # %%

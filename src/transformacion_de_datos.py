@@ -222,22 +222,10 @@ def eliminar_segundo_digito (df, columnas):
         df[columna] = df[columna].apply(lambda num: num if num < 10 else num // 10 )
         print(f"{columna.upper()} --> Valores únicos después de eliminar: {df[columna].nunique()}")
 
-# Función para imputar valores en la columna 'market_segment'
-def imputar_market_segment(row):    
-    if pd.isnull(row['market_segment']):
-        # Reglas para imputar los valores nulos
-        if row['distribution_channel'] == 'Corporate':
-            return 'Corporate'
-        elif row['distribution_channel'] == 'Direct':
-            return 'Direct'
-        elif row['distribution_channel'] == 'Corporate':
-            return 'Corporate'
-        elif row['distribution_channel'] == 'Undefined':
-            return 'Undefined'        
-    else:
-        return row['market_segment']
-
-
+def imputar_por_undefined(df,columns):
+    for columna in columns:
+        df[columna] = df[columna].fillna("Undefined")
+        
 def imputar_nulos_iterative (df, columns):
     """
     Dada una lista de columnas y un DataFrame, esta función completa los nulos de las columnas con el método IterativeImputer.
@@ -273,11 +261,9 @@ def imputar_nulos_iterative (df, columns):
 def imputar_por_unknown(dataframe, lista_columnas):
         """
         Esta función itera sobre una lista de columnas dentro de un dataframe y reemplaza los nulos por 'Unknown'.
-
         Args:
             dataframe (pandas dataframe): Es el dataframe que contiene los datos.
             lista_columnas (lista): Lista de columnas existentes en el dataframe sobre las cuales se quiere imputar los nulos.
-
         Returns:
             dataframe: Dataframe actualizado.
         """
@@ -289,7 +275,6 @@ def imputar_por_unknown(dataframe, lista_columnas):
             else:
                 # Si no existe, imprimir un mensaje de error
                 print(f"❌ La columna '{columna}' no existe en el DataFrame.")
-
         return dataframe
 
 
