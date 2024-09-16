@@ -11,7 +11,7 @@ Requisitos Previos
 
 Para ejecutar este proyecto, necesitarás tener instaladas las siguientes herramientas:
 
-    🐍 Python 3.x: Descargar Python
+    🐍 Python 3.8: Descargar Python
     📦 Pandas y NumPy para el análisis de datos.
     📊 Matplotlib y Seaborn para la creación de gráficos.
     📓 Jupyter Notebook para ejecutar y visualizar el análisis.
